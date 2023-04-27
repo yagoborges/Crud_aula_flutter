@@ -1,4 +1,6 @@
+import 'package:crud_flutter/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,62 +13,83 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SQFlite Demo',
       theme: ThemeData(
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.teal,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
+class MyHomePage extends StatelessWidget {
+  //referencia nossa classe single para gerenciar o banco de dados
+  final dbHelper = DatabaseHelper.instance;
+  //layout homepage
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('Exemplo de CRUD básico'),
       ),
       body: Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            ElevatedButton(
+              child: Text('Inserir dados', style: TextStyle(fontSize: 20),),
+              onPressed: () {_inserir();},
+              ),
+              ElevatedButton(
+                child: Text('Consultar dados', style: TextStyle(fontSize: 20),),
+                 onPressed: () {_consultar();},
+                 ),
+                 ElevatedButton(
+                  child: Text('Atualizar dados', style: TextStyle(fontSize: 20),),
+                  onPressed: () {_atualizar();},
+                  ),
+                  ElevatedButton(
+                    child: Text('Deletar dados', style: TextStyle(fontSize: 20),),
+                    onPressed: () {_deletar();},
+                    ),
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          ),
+          ),
     );
+  }
+  //métodos dos Buttons
+  void _inserir() async {
+    // linha para incluir
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnNome : 'João inserir',
+      DatabaseHelper.columnIdade : 40
+    };
+    final id = await dbHelper.insert(row);
+    print('linha inserida id: $id');
+  }
+
+  void _consultar() async {
+    final todasLinhas = await dbHelper.queryAllRows();
+    print('Consulta todas as linhas:');
+    todasLinhas.forEach((row) => print(row));
+  }
+
+  void _atualizar() async {
+    //linha para atualizar
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnId : 1,
+      DatabaseHelper.columnNome : 'Maria atualizar',
+      DatabaseHelper.columnIdade : 32
+    };
+    final linhasAfetadas = await dbHelper.update(row);
+    print('atualizadas $linhasAfetadas linha(s)');  
+  }
+
+  void _deletar() async {
+    //Assumindo que o numero de linhas é o id para a última linha
+    final id = await dbHelper.queryRowCount();
+    final linhaDeletada = await dbHelper.delete(id!);
+    print('Deleta(s) $linhaDeletada linha(s): linha $id');
   }
 }
