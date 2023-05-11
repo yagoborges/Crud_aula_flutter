@@ -1,6 +1,7 @@
 
 
 import 'package:crud_flutter/DatabaseHelper.dart';
+import 'package:crud_flutter/contato_lista.dart';
 import 'package:flutter/material.dart';
 
 class ContatoFormulario extends StatelessWidget {
@@ -67,11 +68,11 @@ class ContatoFormulario extends StatelessWidget {
 
         ElevatedButton(
           onPressed: () {
-        /*  Navigator.of(context).pop();
+          Navigator.of(context).pop();
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => MyContatoList())
-           );*/
+           );
           },
           child: Text('Listar'),
         ),

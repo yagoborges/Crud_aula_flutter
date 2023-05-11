@@ -1,6 +1,7 @@
 
 
 import 'package:crud_flutter/contato_formulario.dart';
+import 'package:crud_flutter/contato_lista.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -20,8 +21,8 @@ class MyApp extends StatelessWidget {
       routes: {
         //HOME: (context) => MyContatoList(),
         CONTATO_FORM: (context) => ContatoFormulario(),
-        HOME: (context) => ContatoFormulario(),
-        //CONTATO_LIST: (context) => MyContatoList(),
+        HOME: (context) => MyContatoList(),
+        CONTATO_LIST: (context) => MyContatoList(),
       },
     );
   }
