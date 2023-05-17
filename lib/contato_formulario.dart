@@ -1,6 +1,8 @@
 
 
 import 'package:crud_flutter/DatabaseHelper.dart';
+import 'package:crud_flutter/contato.dart';
+import 'package:crud_flutter/contato_formulario_back.dart';
 import 'package:crud_flutter/contato_lista.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +11,11 @@ class ContatoFormulario extends StatelessWidget {
   bool _validate = false;
   late String nome, email, idade;
   final dbHelper = DatabaseHelper.instance;
+  Contato? contato;
 
   @override
   Widget build(BuildContext context) {
+    var _back = ContatoFormularioBack(context);
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.teal,
@@ -26,7 +30,7 @@ class ContatoFormulario extends StatelessWidget {
               child: Form(
                 key: _key,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: _formUI(context),
+                child: _formUI(context, _back),
             ),
           ),
         ),
@@ -34,9 +38,21 @@ class ContatoFormulario extends StatelessWidget {
     );
   }
 
-  Widget _formUI(BuildContext context) {
+  Widget _formUI(BuildContext context, ContatoFormularioBack _back) {
     var _controller = TextEditingController();
     var _controller2 = TextEditingController();
+
+    if (ModalRoute.of(context)!.settings.arguments != null) {
+      contato = ModalRoute.of(context)!.settings.arguments as Contato;
+    }
+
+    if(contato == null) {
+      print('contato nulo');
+    }else {
+      _controller.text = _back.contato.nome!;
+      _controller2.text = _back.contato.idade!.toString();
+    }
+
     return Column(
       children: <Widget>[
         TextFormField(
@@ -47,6 +63,7 @@ class ContatoFormulario extends StatelessWidget {
             validator: _validarNome,
             onSaved: (String? val) {
               nome = val!;
+              //(newValue) => _back.contato.nome = newValue;
             },
           ),
           TextFormField(
@@ -57,6 +74,7 @@ class ContatoFormulario extends StatelessWidget {
             validator: _validarIdade,
             onSaved: (String? val) {
               idade = val!;
+              //(newValue) => _back.contato.idade = newValue;
             }),
 
         SizedBox(height: 15.0),
@@ -127,8 +145,19 @@ class ContatoFormulario extends StatelessWidget {
         DatabaseHelper.columnNome : nome,
         DatabaseHelper.columnIdade : idade,
       };
-      final id = await dbHelper.insert(row);
-      print('linha inserida id: $id');
+
+      if (contato == null){
+        final id = await dbHelper.insert(row);
+        print('linha inserida id: $id');
+      } else {
+        Map<String, dynamic> row = {
+          DatabaseHelper.columnNome : nome,
+          DatabaseHelper.columnIdade : idade,
+          DatabaseHelper.columnId : contato?.id,
+        };
+        final id2 = await dbHelper.update(row);
+        print('linha alterada id: $id2');
+      }
 
     } else {
       // _validate = true;

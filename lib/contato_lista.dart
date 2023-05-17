@@ -106,10 +106,14 @@ class ContatoList extends StatelessWidget {
                       width: 100,
                       child: Row(
                         children: [
-                          iconEditButton(() {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                            });
-                          }),
+                          IconButton(
+                            icon : Icon(Icons.edit),
+                            color: Colors.orange,
+                            onPressed: () {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                _back.goToForm(context, Contato);
+                              });
+                            }),
                           iconRemoveButton(context, (){
                             _back.remove(Contato.id);
                             WidgetsBinding.instance.addPostFrameCallback((_) {
